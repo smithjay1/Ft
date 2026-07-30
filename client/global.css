@@ -1,0 +1,44 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 7%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 7%;
+    --primary: 130 81% 20%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 7%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 215 9% 46%;
+    --accent: 130 81% 20%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 130 81% 20%;
+    --radius: 0.5rem;
+  }
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; }
+  body { @apply bg-background text-foreground; font-family: "DM Sans", sans-serif; }
+  :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label) { overflow-wrap: anywhere; }
+}
+
+@layer components {
+  .lumora-container { @apply mx-auto w-full max-w-[1280px] px-5 sm:px-10 lg:px-20; }
+  .section-padding { @apply py-[60px] md:py-20 lg:py-[120px]; }
+  .font-heading { font-family: "Space Grotesk", sans-serif; }
+  .font-accent { font-family: "Playfair Display", serif; }
+  .lumora-grid { background-image: linear-gradient(rgba(10,93,22,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(10,93,22,.09) 1px, transparent 1px); background-size: 60px 60px; }
+}
+
+@keyframes float { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-18px) scale(1.15); } }
