@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,39 +6,120 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 7%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 7%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 7%;
-    --primary: 130 81% 20%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 7%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 215 9% 46%;
-    --accent: 130 81% 20%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 130 81% 20%;
-    --radius: 0.5rem;
+    --background: 205 33% 4%;
+    --foreground: 180 12% 92%;
+    --card: 205 30% 7%;
+    --card-foreground: 180 12% 92%;
+    --popover: 205 30% 7%;
+    --popover-foreground: 180 12% 92%;
+    --primary: 148 84% 47%;
+    --primary-foreground: 205 40% 5%;
+    --secondary: 205 24% 12%;
+    --secondary-foreground: 180 12% 92%;
+    --muted: 205 22% 13%;
+    --muted-foreground: 205 12% 62%;
+    --accent: 174 74% 51%;
+    --accent-foreground: 205 40% 5%;
+    --destructive: 348 100% 66%;
+    --destructive-foreground: 205 40% 5%;
+    --border: 205 22% 16%;
+    --input: 205 22% 16%;
+    --ring: 148 84% 47%;
+    --radius: 0.85rem;
   }
-  * { @apply border-border; }
-  html { scroll-behavior: smooth; }
-  body { @apply bg-background text-foreground; font-family: "DM Sans", sans-serif; }
-  :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label) { overflow-wrap: anywhere; }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ftm-black text-foreground antialiased;
+    font-family: "Inter", system-ui, sans-serif;
+  }
+
+  :where(p, span, li, h1, h2, h3, h4, h5, h6, a, button, label) {
+    overflow-wrap: anywhere;
+  }
+
+  ::selection {
+    background: rgba(18, 224, 106, 0.28);
+  }
 }
 
 @layer components {
-  .lumora-container { @apply mx-auto w-full max-w-[1280px] px-5 sm:px-10 lg:px-20; }
-  .section-padding { @apply py-[60px] md:py-20 lg:py-[120px]; }
-  .font-heading { font-family: "Space Grotesk", sans-serif; }
-  .font-accent { font-family: "Playfair Display", serif; }
-  .lumora-grid { background-image: linear-gradient(rgba(10,93,22,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(10,93,22,.09) 1px, transparent 1px); background-size: 60px 60px; }
+  .shell {
+    @apply mx-auto w-full max-w-[1240px] px-5 sm:px-8 lg:px-12;
+  }
+
+  .section {
+    @apply py-16 md:py-24;
+  }
+
+  .font-display {
+    font-family: "Space Grotesk", Inter, sans-serif;
+  }
+
+  .eyebrow {
+    @apply font-mono text-[11px] uppercase tracking-[0.28em] text-ftm-green;
+  }
+
+  .panel {
+    @apply rounded-2xl border border-ftm-line/80 bg-ftm-panel/70 backdrop-blur-sm;
+  }
+
+  .panel-hover {
+    @apply transition-all duration-300 hover:border-ftm-green/45 hover:shadow-[0_0_0_1px_rgba(18,224,106,0.15),0_20px_60px_-25px_rgba(18,224,106,0.35)];
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(18, 224, 106, 0.055) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(18, 224, 106, 0.055) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .glow-text {
+    text-shadow: 0 0 30px rgba(18, 224, 106, 0.35);
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-ftm-green via-emerald-300 to-ftm-cyan bg-clip-text text-transparent;
+  }
+
+  .hairline {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-ftm-line to-transparent;
+  }
+
+  .stat-num {
+    @apply font-display text-3xl font-semibold tabular-nums text-white md:text-4xl;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-ftm-line bg-ftm-ink/80 px-3 py-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground;
+  }
 }
 
-@keyframes float { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-18px) scale(1.15); } }
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,97 +1,410 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
-  AtSign,
-  Check,
-  Database,
-  Facebook,
-  Globe2,
-  GraduationCap,
-  Handshake,
-  Instagram,
-  Linkedin,
-  Lightbulb,
-  Menu,
-  Quote,
-  Settings,
-  Shield,
-  TrendingUp,
-  Twitter,
-  Users,
-  X,
+  BarChart3,
+  BookOpen,
+  Compass,
+  LineChart,
+  Radar,
+  ShieldCheck,
+  Target,
+  Timer,
 } from "lucide-react";
+import { Layout } from "@/components/site/Layout";
+import { Reveal } from "@/components/site/Reveal";
+import { SectionHeading } from "@/components/site/SectionHeading";
+import { TradeReplaySection } from "@/components/site/TradeReplay";
+import { CandleChart } from "@/components/chart/CandleChart";
+import { buildSeries } from "@/lib/candles";
+import { computeStats, journal } from "@/data/journal";
+import { milestones } from "@/data/milestones";
 
-const navItems = ["About", "Services", "Industries", "Case Studies", "Process", "Resources", "Contact"];
+const heroCandles = buildSeries({
+  seed: 990211,
+  length: 64,
+  start: 1.2612,
+  volatility: 0.0011,
+  drift: 0.019,
+});
 
-const services = [
-  { icon: Settings, title: "Business Systems Development", description: "Designing the operational backbone that makes your organization more efficient, scalable, and resilient." },
-  { icon: Database, title: "Digital Infrastructure", description: "Building a unified digital ecosystem with the right tools, integrations, and workflows to move faster." },
-  { icon: TrendingUp, title: "Corporate Consulting", description: "Strategic clarity and practical execution for ambitious organizations navigating their next stage of growth." },
-  { icon: Globe2, title: "Media & Public Image Infrastructure", description: "Creating visibility systems that strengthen your reputation, reach, and influence across every channel." },
-  { icon: Users, title: "Executive Support Systems", description: "High-level operating support that gives leaders the focus, insight, and leverage to make better decisions." },
-  { icon: GraduationCap, title: "Training & Implementation", description: "Transferring capability into your team with hands-on training, playbooks, and lasting implementation support." },
+const tickerPairs = [
+  "GBPUSD",
+  "USDCAD",
+  "EURUSD",
+  "GBPJPY",
+  "XAUUSD",
+  "USDJPY",
+  "AUDUSD",
+  "EURJPY",
+  "NAS100",
+  "USDCHF",
 ];
 
-const testimonials = [
-  ["Adewale Johnson", "CEO", "Atlas Technologies", "Lumora helped us transform our operational backbone in 90 days. We finally have the clarity and systems to scale with confidence."],
-  ["Dr. Chioma Nwosu", "Director", "National Health Initiative", "They built the digital infrastructure for our campaign from the ground up. Every moving part now works as one."],
-  ["Tunde Bakare", "Founder", "Veritas Consulting", "It felt like gaining an elite operations team overnight. Their thinking is strategic, but their execution is what sets them apart."],
-  ["Ngozi Eze", "COO", "Luminance Media", "Our CRM redesign changed how we work. Revenue grew 40% in the first quarter because our team could finally move together."],
-  ["Emmanuel Okafor", "Managing Director", "Provident Group", "The executive dashboard alone saves me 10 hours every week. I can see the business clearly and act before issues become problems."],
+const pillars = [
+  {
+    icon: Compass,
+    title: "Liquidity Reversal Model",
+    body: "Wait for liquidity to be engineered, then enter with confirmation instead of chasing price.",
+    to: "/trading-edge",
+    cta: "See the model",
+  },
+  {
+    icon: BookOpen,
+    title: "Every trade journaled",
+    body: "Bias, before chart, entry reasoning, execution, after chart and the lesson — for wins and losses alike.",
+    to: "/trade-journal",
+    cta: "Open the journal",
+  },
+  {
+    icon: Target,
+    title: "The road to funded",
+    body: "A public checklist of what is done, what is in progress and what still stands between me and a payout.",
+    to: "/ftm-journey",
+    cta: "Track the journey",
+  },
 ];
 
-function PillLink({ children, outline = false, to = "/contact" }: { children: React.ReactNode; outline?: boolean; to?: string }) {
-  return <Link reloadDocument to={to} className={`inline-flex items-center justify-center rounded-full px-8 py-4 text-xs font-medium uppercase tracking-[0.08em] transition-all duration-300 hover:scale-[1.02] ${outline ? "border border-lumora-green text-lumora-green hover:bg-lumora-green hover:text-white" : "bg-lumora-green text-white hover:bg-lumora-bright hover:brightness-110"}`}>{children}</Link>;
-}
+const tools = [
+  {
+    icon: Radar,
+    name: "PROPSCAN",
+    body: "Scan prop firm rule sets against my actual trading stats to see which challenges my process survives.",
+    to: "/propscan",
+  },
+  {
+    icon: ShieldCheck,
+    name: "FTM Account Finder",
+    body: "Answer a few questions about capital and risk to find the FTM account type that fits my plan.",
+    to: "/account-finder",
+  },
+  {
+    icon: BarChart3,
+    name: "Win Rate Analytics",
+    body: "Win rate, expectancy, R distribution and equity curve computed live from the journal.",
+    to: "/win-rate-analytics",
+  },
+  {
+    icon: Timer,
+    name: "Interactive Timeline",
+    body: "Every milestone of the journey, filterable and clickable, from first lesson to first payout.",
+    to: "/timeline",
+  },
+];
+
+const comingSoon = [
+  "AI Trading Statistics Dashboard",
+  "Risk-to-Reward Performance",
+  "Monthly Performance Reports",
+  "Weekly Trade Recaps",
+  "Trading Heatmaps",
+  "Trade Filtering by Pair",
+  "Economic News Archive",
+  "Personal Trading Insights",
+];
 
 export default function Index() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
+  const stats = computeStats(journal);
+  const done = milestones.filter((m) => m.status === "done").length;
 
   return (
-    <main className="overflow-hidden bg-white text-lumora-dark">
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-white/[0.08] bg-lumora-dark/80 backdrop-blur-md">
-        <div className="lumora-container flex h-20 items-center justify-between">
-          <Link reloadDocument to="/" className="font-heading text-lg font-semibold tracking-[0.08em] text-white">LUMORA HUB</Link>
-          <nav className="hidden items-center gap-7 lg:flex">
-            <Link reloadDocument to="/" className="relative text-sm text-lumora-bright after:absolute after:-bottom-2 after:left-0 after:right-0 after:h-0.5 after:bg-lumora-bright">Home</Link>
-            {navItems.map((item) => <Link reloadDocument key={item} to={`/${item.toLowerCase().replace(/ /g, "-")}`} className="text-sm text-white/65 transition hover:text-white">{item}</Link>)}
-          </nav>
-          <div className="hidden lg:block"><PillLink>Book Consultation</PillLink></div>
-          <button className="text-white lg:hidden" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button>
-        </div>
-        {menuOpen && <div className="lumora-container border-t border-white/10 pb-6 pt-5 lg:hidden"><nav className="flex flex-col gap-4">{["Home", ...navItems].map((item) => <Link reloadDocument onClick={() => setMenuOpen(false)} key={item} to={item === "Home" ? "/" : `/#${item.toLowerCase().replace(/ /g, "-")}`} className="text-sm text-white/80">{item}</Link>)}<PillLink>Book Consultation</PillLink></nav></div>}
-      </header>
+    <Layout>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 grid-bg opacity-70" />
+        <div className="absolute left-1/2 top-[-18rem] h-[34rem] w-[34rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(18,224,106,0.16),transparent_65%)] blur-2xl" />
+        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-ftm-black to-transparent" />
 
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-lumora-dark pt-20">
-        <div className="absolute inset-0 lumora-grid" />
-        <div className="absolute -left-20 top-24 h-64 w-64 rounded-full bg-lumora-green/10 blur-3xl" />
-        <div className="absolute right-0 top-1/3 h-96 w-96 rounded-full bg-lumora-bright/10 blur-3xl" />
-        {["left-[12%] top-[24%]", "left-[78%] top-[18%]", "left-[22%] top-[70%]", "left-[88%] top-[78%]", "left-[63%] top-[58%]", "left-[42%] top-[16%]"].map((position, i) => <span key={position} className={`absolute ${position} h-1.5 w-1.5 animate-float rounded-full bg-lumora-bright/60`} style={{ animationDelay: `${i * 0.8}s` }} />)}
-        <div className="relative z-10 mx-auto max-w-[850px] px-5 text-center">
-          <p className="mb-6 text-xs uppercase tracking-[0.18em] text-lumora-bright">Business Systems · Digital Infrastructure · Corporate Consulting</p>
-          <h1 className="font-heading text-5xl font-medium leading-[1.08] tracking-[-0.045em] text-white sm:text-6xl lg:text-[76px]">Building The Systems Behind Modern Success</h1>
-          <p className="mx-auto mt-8 max-w-[650px] text-lg leading-relaxed text-white/60 sm:text-xl">We help businesses, executives, institutions and public figures create scalable infrastructure, stronger visibility and sustainable growth — across Africa and beyond.</p>
-          <div className="mt-12 flex flex-col justify-center gap-4 sm:flex-row"><PillLink>Book Consultation</PillLink><PillLink outline to="/services">Explore Services</PillLink></div>
+        <div className="shell relative grid items-center gap-14 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:py-28">
+          <div>
+            <motion.p
+              className="eyebrow"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.05 }}
+            >
+              Forex trader · Smart Money Concepts · Public journal
+            </motion.p>
+            <motion.h1
+              className="mt-5 font-display text-[2.6rem] font-semibold leading-[1.06] tracking-tight text-white sm:text-6xl"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.12 }}
+            >
+              The Road to My{" "}
+              <span className="gradient-text glow-text">First Funded</span>{" "}
+              Account.
+            </motion.h1>
+            <motion.p
+              className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+            >
+              I'm a Forex trader documenting every step of my journey — from
+              analysis and execution to lessons learned — with one goal in mind:
+              becoming a consistently profitable trader and earning my first
+              funded account.
+            </motion.p>
+            <motion.div
+              className="mt-9 flex flex-wrap items-center gap-3"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.28 }}
+            >
+              <Link
+                to="/ftm-journey"
+                className="group inline-flex items-center gap-2 rounded-xl bg-ftm-green px-5 py-3 text-sm font-semibold text-ftm-black transition-all hover:bg-emerald-400 hover:shadow-[0_18px_45px_-18px_rgba(18,224,106,0.8)]"
+              >
+                Explore My Journey
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <Link
+                to="/trade-journal"
+                className="inline-flex items-center gap-2 rounded-xl border border-ftm-line bg-ftm-panel/60 px-5 py-3 text-sm font-semibold text-white transition-colors hover:border-ftm-green/50"
+              >
+                View Trade Journal
+                <LineChart className="h-4 w-4 text-ftm-green" />
+              </Link>
+            </motion.div>
+
+            <motion.dl
+              className="mt-12 grid max-w-lg grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              {[
+                { label: "Trades journaled", value: stats.total },
+                { label: "Win rate", value: `${stats.winRate.toFixed(0)}%` },
+                { label: "Net R", value: `+${stats.totalR.toFixed(1)}R` },
+                {
+                  label: "Milestones cleared",
+                  value: `${done}/${milestones.length}`,
+                },
+              ].map((item) => (
+                <div key={item.label}>
+                  <dd className="stat-num">{item.value}</dd>
+                  <dt className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                    {item.label}
+                  </dt>
+                </div>
+              ))}
+            </motion.dl>
+          </div>
+
+          <motion.div
+            className="panel relative overflow-hidden"
+            initial={{ opacity: 0, y: 26 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="flex items-center justify-between border-b border-ftm-line/70 px-4 py-3">
+              <span className="font-mono text-xs text-white">GBPUSD · 5M</span>
+              <span className="font-mono text-[11px] text-ftm-green">
+                Liquidity Reversal Model
+              </span>
+            </div>
+            <div className="aspect-[1000/420] bg-ftm-ink/70">
+              <CandleChart candles={heroCandles} digits={4} compact />
+            </div>
+            <div className="grid grid-cols-3 divide-x divide-ftm-line/70 border-t border-ftm-line/70">
+              {[
+                { label: "Model", value: "LRM" },
+                { label: "Risk / trade", value: "0.5%" },
+                { label: "Avg target", value: "1:3.4" },
+              ].map((item) => (
+                <div key={item.label} className="px-4 py-3">
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {item.label}
+                  </p>
+                  <p className="mt-0.5 font-mono text-sm text-white">
+                    {item.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 border-t border-white/[0.08] py-5"><div className="lumora-container flex flex-col items-center justify-between gap-4 sm:flex-row"><span className="text-xs text-white/40">Trusted by leaders across Africa</span><div className="flex gap-7 font-heading text-xs tracking-[0.18em] text-white/30"><span>GOV.NG</span><span>ATLASS</span><span>VERITAS</span><span>LUMIN</span><span>PROV</span></div></div></div>
       </section>
 
-      <section className="section-padding bg-white"><div className="lumora-container grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-20">{[[Shield, "Authority", "We bring deep expertise in business systems, digital infrastructure, and corporate strategy — tested across industries and grounded in hands-on implementation."], [Lightbulb, "Innovation", "We don't follow playbooks — we write them. Every solution is designed around your context, your ambition, and the modern tools that can move you forward."], [Handshake, "Trust", "Long-term partnerships built on transparency and measurable outcomes. We stay close, communicate clearly, and support you beyond the launch." ]].map(([Icon, title, copy]) => <div key={title as string}><Icon className="mb-6 text-lumora-green" size={38} strokeWidth={1.5} /><h2 className="font-heading text-2xl font-medium">{title as string}</h2><p className="mt-4 text-base leading-relaxed text-lumora-muted">{copy as string}</p></div>)}</div></section>
+      <div className="overflow-hidden border-y border-ftm-line/70 bg-ftm-ink/50 py-3">
+        <div className="flex w-max animate-ticker gap-10">
+          {[...tickerPairs, ...tickerPairs].map((pair, i) => (
+            <span
+              key={`${pair}-${i}`}
+              className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground"
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-ftm-green/70" />
+              {pair}
+            </span>
+          ))}
+        </div>
+      </div>
 
-      <section id="services" className="section-padding bg-lumora-soft"><div className="lumora-container"><div className="mx-auto mb-16 max-w-2xl text-center"><p className="mb-4 text-xs uppercase tracking-[0.15em] text-lumora-green">What We Do</p><h2 className="font-heading text-4xl font-medium leading-tight tracking-[-0.03em] md:text-5xl">End-to-End Systems for Modern Organizations</h2><p className="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-lumora-muted">From infrastructure to influence — comprehensive solutions that transform how organizations operate and grow.</p></div><div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">{services.map(({ icon: Icon, title, description }) => <Link reloadDocument to={`/services#${title.toLowerCase().replace(/ & /g, "-").replace(/ /g, "-")}`} key={title} className="group rounded-lg border border-black/[0.06] bg-white p-8 transition-all duration-300 hover:-translate-y-1.5 hover:border-lumora-green hover:shadow-[0_12px_40px_rgba(0,0,0,0.08)] md:p-10"><Icon className="mb-6 text-lumora-green" size={38} strokeWidth={1.5} /><h3 className="font-heading text-xl font-medium">{title}</h3><p className="mt-3 line-clamp-2 text-sm leading-relaxed text-lumora-muted">{description}</p><span className="mt-5 inline-flex items-center gap-1 text-sm text-lumora-green group-hover:underline">Learn More <ArrowRight size={14} /></span></Link>)}</div></div></section>
+      <section className="section shell">
+        <SectionHeading
+          eyebrow="What this site is"
+          title="A trading portfolio that documents the process, not just the results."
+          description="Three things drive everything here: a tested model, an honest journal, and a public record of the road to a funded account."
+        />
+        <div className="mt-12 grid gap-5 md:grid-cols-3">
+          {pillars.map((pillar, i) => (
+            <Reveal key={pillar.title} delay={i * 0.08}>
+              <Link
+                to={pillar.to}
+                className="panel panel-hover group flex h-full flex-col p-6"
+              >
+                <pillar.icon className="h-6 w-6 text-ftm-green" />
+                <h3 className="mt-5 font-display text-lg font-semibold text-white">
+                  {pillar.title}
+                </h3>
+                <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+                  {pillar.body}
+                </p>
+                <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-ftm-green">
+                  {pillar.cta}
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </section>
 
-      <section className="bg-gradient-to-br from-lumora-green to-lumora-bright py-20 md:py-24"><div className="lumora-container grid grid-cols-2 gap-8 lg:grid-cols-4 lg:gap-12">{[["40+", "Projects Delivered"], ["25+", "Clients Served"], ["60+", "Systems Built"], ["38%", "Average Efficiency Gain"]].map(([number, label]) => <div key={label} className="text-center"><p className="font-heading text-5xl font-bold leading-tight text-white lg:text-6xl">{number}</p><p className="mt-2 text-sm text-white/70">{label}</p></div>)}</div></section>
+      <section id="trade-replay" className="section shell">
+        <SectionHeading
+          eyebrow="Trade Replay"
+          title="Watch the trade unfold candle by candle."
+          description="Not a screenshot of a win — a replay. Liquidity gets taken, structure shifts, the entry appears only when the confirmation candle closes, and every step is explained as it happens."
+        />
+        <div className="mt-12">
+          <TradeReplaySection />
+        </div>
+      </section>
 
-      <section id="case-studies" className="section-padding bg-white"><div className="lumora-container"><div className="mx-auto mb-16 max-w-2xl text-center"><p className="mb-4 text-xs uppercase tracking-[0.15em] text-lumora-green">Client Success Stories</p><h2 className="font-heading text-4xl font-medium tracking-[-0.03em] md:text-5xl">What Our Partners Say</h2></div><div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">{testimonials.slice(0, 3).map(([name, role, company, quote]) => <article key={name} className="rounded-lg border border-black/[0.06] p-8 md:p-10"><Quote className="mb-6 text-lumora-green/25" size={34} /><p className="font-accent text-lg italic leading-relaxed">“{quote}”</p><div className="mt-7"><p className="font-semibold">{name}</p><p className="text-sm text-lumora-muted">{role}</p><p className="text-sm text-lumora-green">{company}</p></div></article>)}</div></div></section>
+      <section className="section shell">
+        <SectionHeading
+          eyebrow="Interactive tools"
+          title="Standalone tools built for this journey."
+          description="Each tool runs on the same journal data, so what you see reflects how I actually trade."
+        />
+        <div className="mt-12 grid gap-5 sm:grid-cols-2">
+          {tools.map((tool, i) => (
+            <Reveal key={tool.name} delay={i * 0.06}>
+              <Link
+                to={tool.to}
+                className="panel panel-hover group flex h-full items-start gap-4 p-6"
+              >
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-ftm-green/25 bg-ftm-green/10">
+                  <tool.icon className="h-5 w-5 text-ftm-green" />
+                </span>
+                <span className="flex-1">
+                  <span className="flex items-center gap-2">
+                    <span className="font-display text-base font-semibold text-white">
+                      {tool.name}
+                    </span>
+                    <ArrowRight className="h-3.5 w-3.5 text-ftm-green transition-transform group-hover:translate-x-0.5" />
+                  </span>
+                  <span className="mt-2 block text-sm leading-relaxed text-muted-foreground">
+                    {tool.body}
+                  </span>
+                </span>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </section>
 
-      <section id="contact" className="bg-lumora-dark py-24 md:py-32"><div className="lumora-container text-center"><h2 className="font-heading text-4xl font-medium tracking-[-0.03em] text-white md:text-5xl">Ready to Build Systems That Scale?</h2><p className="mt-4 text-lg text-white/60">Every great organization runs on great systems. Let's architect yours.</p><div className="mt-10"><PillLink>Book Your Consultation</PillLink></div><p className="mt-3 text-xs text-white/35">Free 30-minute strategy call · No commitment</p></div></section>
+      <section className="section shell">
+        <div className="panel grid gap-8 p-7 lg:grid-cols-[1fr_1fr] lg:p-10">
+          <div>
+            <p className="eyebrow">Road to my first FTM account</p>
+            <h2 className="mt-3 font-display text-2xl font-semibold text-white md:text-3xl">
+              {done} of {milestones.length} milestones cleared.
+            </h2>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              I haven't traded with FTM yet. Everything here reflects genuine
+              interest — fast payouts, instant funding options and
+              trader-friendly rules — rather than personal experience. The plan
+              is to earn the opportunity, then share real results.
+            </p>
+            <Link
+              to="/timeline"
+              className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-ftm-green"
+            >
+              Open the interactive timeline
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+          <ul className="grid gap-2.5">
+            {milestones.map((milestone) => (
+              <li
+                key={milestone.title}
+                className="flex items-center gap-3 rounded-xl border border-ftm-line/70 bg-ftm-ink/50 px-4 py-3"
+              >
+                <span
+                  className={
+                    milestone.status === "done"
+                      ? "font-mono text-sm text-ftm-green"
+                      : "font-mono text-sm text-muted-foreground"
+                  }
+                >
+                  {milestone.status === "done" ? "✅" : "⏳"}
+                </span>
+                <span
+                  className={
+                    milestone.status === "done"
+                      ? "text-sm text-white"
+                      : "text-sm text-muted-foreground"
+                  }
+                >
+                  {milestone.title}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
-      <footer className="bg-lumora-green text-white"><div className="lumora-container grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-4 lg:gap-8"><div><Link reloadDocument to="/" className="font-heading text-xl font-semibold tracking-[0.08em]">LUMORA HUB</Link><p className="mt-3 max-w-xs text-sm leading-relaxed text-white/65">Building Systems. Creating Influence. Driving Growth.</p><p className="mb-3 mt-8 text-xs uppercase tracking-[0.08em] text-white/50">Subscribe to our newsletter</p>{subscribed ? <p className="flex items-center gap-2 text-sm text-white"><Check size={16} /> You're on the list.</p> : <form onSubmit={(e) => { e.preventDefault(); setSubscribed(true); }} className="flex gap-2"><input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your email" className="h-10 min-w-0 flex-1 rounded-full border border-white/20 bg-white/10 px-4 text-sm text-white outline-none placeholder:text-white/40 focus:border-white/50" /><button className="h-10 rounded-full bg-white px-5 text-xs font-medium uppercase tracking-wider text-lumora-green transition hover:bg-white/90">Subscribe</button></form>}</div><FooterColumn title="Services" items={services.map((s) => s.title)} /><FooterColumn title="Company" items={["About Us", "Our Process", "Case Studies", "Resources", "Contact"]} /><div><h3 className="mb-6 text-sm uppercase tracking-[0.08em]">Get In Touch</h3><div className="space-y-3 text-sm text-white/70"><p>lumorahub2@gmail.com</p><p>+234 702 534 0480</p><p>No 8b, Providence Street, Lekki, Lagos, Nigeria</p></div><div className="mt-6 flex gap-4 text-white/60"><Link reloadDocument size={18} /><Twitter size={18} /><Instagram size={18} /><Facebook size={18} /><AtSign size={18} /></div></div></div><div className="border-t border-white/15"><div className="lumora-container flex flex-col items-center justify-between gap-4 py-6 text-xs text-white/50 sm:flex-row"><span>© 2025 Lumora Hub. All rights reserved.</span><span>Privacy Policy &nbsp; · &nbsp; Terms of Service</span></div></div></footer>
-    </main>
+      <section className="section shell">
+        <SectionHeading eyebrow="Future updates" title="Coming soon." />
+        <div className="mt-10 flex flex-wrap gap-2.5">
+          {comingSoon.map((item) => (
+            <span key={item} className="chip normal-case tracking-normal">
+              {item}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      <section className="section shell pb-24">
+        <div className="panel relative overflow-hidden p-8 text-center md:p-14">
+          <div className="absolute inset-0 grid-bg opacity-40" />
+          <div className="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(18,224,106,0.2),transparent_65%)] blur-2xl" />
+          <div className="relative">
+            <p className="eyebrow">Consistency before profits</p>
+            <h2 className="mx-auto mt-4 max-w-2xl font-display text-2xl font-semibold leading-snug text-white md:text-4xl">
+              Profits are the result of consistency — so consistency is what I
+              document.
+            </h2>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link
+                to="/about"
+                className="inline-flex items-center gap-2 rounded-xl bg-ftm-green px-5 py-3 text-sm font-semibold text-ftm-black transition-colors hover:bg-emerald-400"
+              >
+                Read my story
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                to="/win-rate-analytics"
+                className="inline-flex items-center gap-2 rounded-xl border border-ftm-line px-5 py-3 text-sm font-semibold text-white transition-colors hover:border-ftm-green/50"
+              >
+                See the numbers
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    </Layout>
   );
 }
-
-function FooterColumn({ title, items }: { title: string; items: string[] }) { const routes: Record<string, string> = { "About Us": "/about", "Our Process": "/process", "Case Studies": "/case-studies", Resources: "/resources", Contact: "/contact" }; return <div><h3 className="mb-6 text-sm uppercase tracking-[0.08em]">{title}</h3><div className="space-y-3">{items.map((item) => <Link reloadDocument key={item} to={routes[item] ?? `/services#${item.toLowerCase().replace(/ & /g, "-").replace(/ /g, "-")}`} className="block text-sm text-white/65 transition hover:text-white">{item}</Link>)}</div></div>; }
